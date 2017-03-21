@@ -1,0 +1,79 @@
+{
+  "columns" : [
+    {
+      "name" : "first_name",
+      "type" : "string",
+      "converters" : [
+        {
+          "name" : "to_upper"
+        },
+        {
+          "name" : "remove",
+          "parameters" : [
+            {"first" : "é"},
+            {"first" : "è"}
+          ]
+        },
+        {
+          "name" : "replace",
+          "parameters" : [
+            {"first" : "a", "second" : "@"}
+          ]
+        },
+        {
+          "name" : "trim"
+        }
+      ]
+    },
+    {
+      "name" : "second_name",
+      "type" : "string",
+      "converters" : [
+        {
+          "name" : "to_upper"
+        },
+        {
+          "name" : "remove",
+          "parameters" : [
+            {"first" : "é"},
+            {"first" : "è"}
+          ]
+        },
+        {
+          "name" : "replace",
+          "parameters" : [
+            {"first" : "a", "second" : "@"}
+          ]
+        },
+        {
+          "name" : "trim"
+        }
+      ]
+    },
+    {
+      "name" : "last_name",
+      "type" : "string",
+      "converters" : [
+        {
+          "name" : "to_upper"
+        },
+        {
+          "name" : "remove",
+          "parameters" : [
+            {"first" : "é"},
+            {"first" : "è"}
+          ]
+        },
+        {
+          "name" : "replace",
+          "parameters" : [
+            {"first" : "a", "second" : "@"}
+          ]
+        },
+        {
+          "name" : "trim"
+        }
+      ]
+    }
+  ]
+}
