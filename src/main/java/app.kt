@@ -1,6 +1,6 @@
 @file:Suppress("EXPERIMENTAL_FEATURE_WARNING")
 
-import base.Log
+import base.Storage
 import base.json.*
 import com.google.gson.Gson
 import org.jetbrains.ktor.application.call
@@ -24,7 +24,7 @@ fun main(args: Array<String>) {
     val server = embeddedJettyServer(8080) {
         routing {
             get("/result") {
-                call.respondText(Log.toResult())
+                call.respondText(Storage.toResult())
             }
 
             post("/csv") {
@@ -33,7 +33,7 @@ fun main(args: Array<String>) {
                 val minRowSize = rows.first().size()
                 cols = rows.first().size() * 2
 
-                Log.fields.clear()
+                Storage.fields.clear()
 
                 rows.withIndex().forEach { csvRow ->
                     if (minRowSize != csvRow.value.size()) throw IOException("Min row size [$minRowSize] != current row size [${csvRow.value.size()}]")
@@ -41,7 +41,7 @@ fun main(args: Array<String>) {
                     csvRow.value.withIndex().forEach { csvField ->
                         if (csvField.value.isEmpty()) throw IOException("[] Value can not be empty [${csvRow.index} : ${csvField.index}]")
 
-                        Log.fields.add(Field(csvRow.index, csvField.index, csvField.value))
+                        Storage.fields.add(Field(csvRow.index, csvField.index, csvField.value))
                     }
                 }
 
@@ -54,7 +54,7 @@ fun main(args: Array<String>) {
                 val reader = readJson(call.request)
                 val rules: Rules = Gson().fromJson(reader, Rules().javaClass)
 
-                Log.fields.forEach { f ->
+                Storage.fields.forEach { f ->
                     val jsonColumn = rules.columns.withIndex().first { it.index == f.y }.value
                     f.converters.clear()
 
@@ -65,7 +65,7 @@ fun main(args: Array<String>) {
                     }
                 }
 
-                Log.fields.forEach { f ->
+                Storage.fields.forEach { f ->
                     var input = f.value
                     f.converters.forEach { c ->
                         val converted = ConversionList(input, c).convert()
@@ -83,7 +83,7 @@ fun main(args: Array<String>) {
             }
 
             get("/data") {
-                call.respondText(Log.toData(), ContentType.Application.Json)
+                call.respondText(Storage.toData(), ContentType.Application.Json)
             }
 
             get("/data-tables.js") {

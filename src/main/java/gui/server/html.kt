@@ -7,12 +7,9 @@ import org.apache.commons.csv.*
 fun renderPage(cols: Int): String {
     return createHTML().html {
         head {
-            //styleLink("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
             styleLink("https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css")
-
             script(ScriptType.textJScript, "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js")
             script(ScriptType.textJScript, "https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js")
-
             script(ScriptType.textJScript, "/data-tables.js")
         }
         body {
@@ -21,12 +18,12 @@ fun renderPage(cols: Int): String {
                 div("row") {
                     div("col-md-12") {
                         bootstrapPanel("Data input") {
-                            postForm("/json", FormEncType.multipartFormData) {
-                                attributes["style"] = "float: left;"
-                                bootstrapInput("json")
-                            }
                             postForm("/csv", FormEncType.multipartFormData) {
+                                attributes["style"] = "float: left;"
                                 bootstrapInput("csv")
+                            }
+                            postForm("/json", FormEncType.multipartFormData) {
+                                bootstrapInput("json")
                             }
                             div { attributes["style"] = "clear: left;" }
                         }
@@ -41,9 +38,15 @@ fun renderPage(cols: Int): String {
                                 attributes["width"] = "100%"
                                 thead {
                                     tr {
-                                        th { +"#" }
+                                        th {
+                                            attributes["style"] = "text-align: left;"
+                                            +"#"
+                                        }
                                         for (i in 1..cols) {
-                                            th { +i.toString() }
+                                            th {
+                                                attributes["style"] = "text-align: left;"
+                                                +i.toString()
+                                            }
                                         }
                                     }
                                 }

@@ -3,7 +3,7 @@ package base
 import base.json.Field
 import com.google.gson.Gson
 
-object Log {
+object Storage {
     val fields = mutableListOf<Field>()
 
     fun toData(): String {
