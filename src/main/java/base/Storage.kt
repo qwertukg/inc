@@ -15,19 +15,16 @@ object Storage {
                 fields.filter { it.x == f.x }.forEach {
                     var lastValue: String = it.value
                     var source = it.value
-                    var arrow = ""
                     var result = ""
 
                     if (!it.converters.isEmpty()) lastValue = it.converters.last().value
 
                     if (it.value != lastValue) {
                         source = "<pre class='source'>" + it.value + "</pre>"
-                        arrow = "&rarr;"
                         result = "<pre class='result'>" + it.converters.last().value + "</pre>"
                     }
 
                     row.add(source)
-                    row.add(arrow)
                     row.add(result)
                 }
 

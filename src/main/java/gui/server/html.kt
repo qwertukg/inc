@@ -9,7 +9,7 @@ fun renderPage(cols: Int, csvColor: String, jsonColor: String, runColor: String)
         head {
             styleLink("https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css")
             style {
-                +"pre.source { border-bottom:1px dotted #f66; display:inline; }"
+                +"pre.source { border-bottom:1px dotted #f00; display:inline; }"
                 +"pre.result { border-bottom:1px dotted #666; display:inline; }"
             }
             script(ScriptType.textJScript, "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js")

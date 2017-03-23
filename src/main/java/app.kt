@@ -31,7 +31,7 @@ fun main(args: Array<String>) {
                 val reader = readCsv(call.request)
                 val rows = CSVFormat.EXCEL.parse(reader)
                 val minRowSize = rows.first().size()
-                cols = rows.first().size() * 3
+                cols = rows.first().size() * 2
 
                 Storage.fields.clear()
 
