@@ -5,19 +5,14 @@
       "type" : "string",
       "converters" : [
         {
-          "name" : "to_upper"
-        },
-        {
-          "name" : "remove",
+          "name" : "replace_ignore_case",
           "parameters" : [
-            {"first" : "é"},
-            {"first" : "è"}
-          ]
-        },
-        {
-          "name" : "replace",
-          "parameters" : [
-            {"first" : "a", "second" : "@"}
+            {"first" : "s", "second" : "$"},
+            {"first" : "a", "second" : "@"},
+            {"first" : "no", "second" : "№"},
+            {"first" : "o", "second" : "0"},
+            {"first" : "n", "second" : "#"},
+            {"first" : "w", "second" : "\\/\\/"}
           ]
         },
         {
@@ -30,19 +25,15 @@
       "type" : "string",
       "converters" : [
         {
-          "name" : "to_upper"
-        },
-        {
-          "name" : "remove",
+          "name" : "replace_ignore_case",
           "parameters" : [
-            {"first" : "é"},
-            {"first" : "è"}
-          ]
-        },
-        {
-          "name" : "replace",
-          "parameters" : [
-            {"first" : "a", "second" : "@"}
+            {"first" : "s", "second" : "$"},
+            {"first" : "a", "second" : "@"},
+            {"first" : "no", "second" : "№"},
+            {"first" : "o", "second" : "0"},
+            {"first" : "n", "second" : "#"},
+            {"first" : "w", "second" : "\\/\\/"}
+
           ]
         },
         {
@@ -55,19 +46,34 @@
       "type" : "string",
       "converters" : [
         {
-          "name" : "to_upper"
-        },
-        {
-          "name" : "remove",
+          "name" : "replace_ignore_case",
           "parameters" : [
-            {"first" : "é"},
-            {"first" : "è"}
+            {"first" : "é", "second" : "e"},
+            {"first" : "è", "second" : "e"},
+            {"first" : "ë", "second" : "e"},
+            {"first" : "å", "second" : "a"},
+            {"first" : "à", "second" : "a"},
+            {"first" : "á", "second" : "a"},
+            {"first" : "ï", "second" : "i"},
+            {"first" : "í", "second" : "i"},
+            {"first" : "ì", "second" : "i"},
+            {"first" : "ò", "second" : "o"},
+            {"first" : "ö", "second" : "o"},
+            {"first" : "ó", "second" : "o"},
+            {"first" : "ú", "second" : "u"},
+            {"first" : "ù", "second" : "u"},
+            {"first" : "ç", "second" : "c"}
           ]
         },
         {
-          "name" : "replace",
+          "name" : "replace_ignore_case",
           "parameters" : [
-            {"first" : "a", "second" : "@"}
+            {"first" : "s", "second" : "$"},
+            {"first" : "a", "second" : "@"},
+            {"first" : "no", "second" : "№"},
+            {"first" : "o", "second" : "0"},
+            {"first" : "n", "second" : "#"},
+            {"first" : "w", "second" : "\\/\\/"}
           ]
         },
         {

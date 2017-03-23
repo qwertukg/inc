@@ -4,48 +4,37 @@ import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import org.apache.commons.csv.*
 
-fun renderPage(): String {
+fun renderPage(cols: Int): String {
     return createHTML().html {
         head {
-            styleLink("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
-            styleLink("https://cdn.datatables.net/r/bs-3.3.5/jq-2.1.4,dt-1.10.8/datatables.min.css")
+            //styleLink("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
+            styleLink("https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css")
+
             script(ScriptType.textJScript, "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js")
-            script(ScriptType.textJScript, "https://cdn.datatables.net/r/bs-3.3.5/jqc-1.11.3,dt-1.10.8/datatables.min.js")
+            script(ScriptType.textJScript, "https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js")
+
             script(ScriptType.textJScript, "/data-tables.js")
         }
         body {
+            attributes["style"] = "font-family: segoe ui;"
             div("container-fluid") {
-                attributes["style"] = "margin-top: 20px;"
-
                 div("row") {
-                    div("col-md-2") {
+                    div("col-md-12") {
                         bootstrapPanel("Data input") {
-                            postForm("/json") {
-                                encType = FormEncType.multipartFormData
-                                //bootstrapInput("input", true)
+                            postForm("/json", FormEncType.multipartFormData) {
+                                attributes["style"] = "float: left;"
                                 bootstrapInput("json")
-                                div("form-group") {
-                                    submitInput {
-                                        attributes["class"] = "btn btn-success"
-                                        value = "Run!"
-                                    }
-                                }
                             }
-                            hr {  }
-                            postForm("/csv") {
-                                encType = FormEncType.multipartFormData
+                            postForm("/csv", FormEncType.multipartFormData) {
                                 bootstrapInput("csv")
-                                div("form-group") {
-                                    submitInput {
-                                        attributes["class"] = "btn btn-success"
-                                        value = "Load"
-                                    }
-                                }
                             }
+                            div { attributes["style"] = "clear: left;" }
                         }
                     }
+                }
 
-                    div("col-md-10") {
+                div("row") {
+                    div("col-md-12") {
                         bootstrapPanel("Results") {
                             table("data display table table-striped table-bordered") {
                                 attributes["cellspacing"] = "0"
@@ -53,23 +42,12 @@ fun renderPage(): String {
                                 thead {
                                     tr {
                                         th { +"#" }
-                                        th { +"Row" }
-                                        th { +"Column" }
-                                        th { +"Source" }
-                                        th { +"Operation" }
-                                        th { +"Result" }
-                                        th { +"Parameter" }
+                                        for (i in 1..cols) {
+                                            th { +i.toString() }
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }
-                }
-
-                div("row") {
-                    div("col-md-12") {
-                        bootstrapPanel("JSON") {
-                            code { }
                         }
                     }
                 }
@@ -80,11 +58,13 @@ fun renderPage(): String {
 }
 
 private fun FORM.bootstrapInput(_name: String, text: Boolean = false) {
+    submitInput {
+        attributes["style"] = "float: left;"
+        value = "Load ${_name.capitalize()}"
+    }
+
     div("form-group") {
-        label {
-            for_ = _name
-            +_name.capitalize()
-        }
+        attributes["style"] = "float: left;"
 
         if (text) textInput {
             attributes["id"] = _name
@@ -95,13 +75,10 @@ private fun FORM.bootstrapInput(_name: String, text: Boolean = false) {
             name = _name
         }
     }
+
 }
 
-private fun DIV.bootstrapPanel(title: String, body: DIV.() -> Unit) {
-    div("panel panel-primary") {
-        div("panel-heading") { b { +title } }
-        div("panel-body") {
-            body()
-        }
-    }
+private fun DIV.bootstrapPanel(title: String, block: DIV.() -> Unit) {
+    div { +title.toUpperCase() }
+    block()
 }

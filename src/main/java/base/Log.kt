@@ -1,36 +1,27 @@
 package base
 
-import base.json.Column
-import base.json.Parameter
-import base.json.Result
+import base.json.Field
 import com.google.gson.Gson
 
 object Log {
-    val columns = mutableListOf<Column>()
-
-    /*fun toRows(): MutableList<MutableList<Result>> {
-        val rows = mutableListOf<MutableList<Result>>()
-
-        columns.forEach { column ->
-            column.results.forEach { result ->
-                //rows.add(result.index, )
-            }
-        }
-
-        return rows
-    }*/
+    val fields = mutableListOf<Field>()
 
     fun toData(): String {
         val data = mutableListOf<MutableList<String>>()
 
-        columns.forEach { column ->
-            val columnId = (column.index + 1).toString()
-            column.results.forEach { result ->
-                val rowId = (result.index + 1).toString()
-                result.converters.forEach { converter ->
-                    val id = (data.size + 1).toString()
-                    data.add(mutableListOf(id, rowId, columnId, converter.source, converter.name, converter.value, "NOT IMPLEMENTED"))
+        fields.forEach { f ->
+            if (f.y == 0) {
+                val row = mutableListOf(f.x.toString())
+                fields.filter { it.x == f.x }.forEach {
+                    row.add("[${it.value}]")
+                    if (!it.converters.isEmpty()) {
+                        val v = it.converters.last().value
+                        if (v != it.value) row.add("[${it.converters.last().value}]")
+                        else row.add("")
+                    }
+                    else row.add("")
                 }
+                data.add(f.x, row)
             }
         }
 
@@ -38,7 +29,7 @@ object Log {
     }
 
     fun toResult(): String {
-        return Gson().toJson(columns)
+        return Gson().toJson(fields)
     }
 
 }

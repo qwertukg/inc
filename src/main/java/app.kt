@@ -1,10 +1,7 @@
 @file:Suppress("EXPERIMENTAL_FEATURE_WARNING")
 
 import base.Log
-import base.json.Column
-import base.json.Converter
-import base.json.Rules
-import base.json.Result
+import base.json.*
 import com.google.gson.Gson
 import org.jetbrains.ktor.application.call
 import org.jetbrains.ktor.http.ContentType
@@ -16,9 +13,13 @@ import gui.server.*
 import strings.ConversionList
 import org.apache.commons.csv.CSVFormat
 import java.io.IOException
+import kotlin.reflect.full.createInstance
+import kotlin.reflect.full.primaryConstructor
 
 fun main(args: Array<String>) {
     //val reader = FileReader("${System.getProperty("user.dir")}\\src\\main\\java\\data.base.json")
+
+    var cols = 0
 
     val server = embeddedJettyServer(8080) {
         routing {
@@ -30,7 +31,9 @@ fun main(args: Array<String>) {
                 val reader = readCsv(call.request)
                 val rows = CSVFormat.EXCEL.parse(reader)
                 val minRowSize = rows.first().size()
-                Log.columns.clear()
+                cols = rows.first().size() * 2
+
+                Log.fields.clear()
 
                 rows.withIndex().forEach { csvRow ->
                     if (minRowSize != csvRow.value.size()) throw IOException("Min row size [$minRowSize] != current row size [${csvRow.value.size()}]")
@@ -38,9 +41,7 @@ fun main(args: Array<String>) {
                     csvRow.value.withIndex().forEach { csvField ->
                         if (csvField.value.isEmpty()) throw IOException("[] Value can not be empty [${csvRow.index} : ${csvField.index}]")
 
-                        if (!Log.columns.any { it.index == csvField.index }) Log.columns.add(csvField.index, Column(csvField.index))
-
-                        Log.columns[csvField.index].results.add(csvRow.index, Result(csvRow.index, csvField.value))
+                        Log.fields.add(Field(csvRow.index, csvField.index, csvField.value))
                     }
                 }
 
@@ -53,26 +54,23 @@ fun main(args: Array<String>) {
                 val reader = readJson(call.request)
                 val rules: Rules = Gson().fromJson(reader, Rules().javaClass)
 
-                rules.columns.withIndex().forEach { column ->
-                    val storedColumn = Log.columns.first { it.index == column.index }
+                Log.fields.forEach { f ->
+                    val jsonColumn = rules.columns.withIndex().first { it.index == f.y }.value
+                    f.converters.clear()
 
-                    storedColumn.results.forEach { result ->
-                        var input = result.value
-                        result.converters.clear()
+                    jsonColumn.converters.forEach { c ->
+                        val _c = Converter(f.value, c.parameters)
+                        _c.name = c.name
+                        f.converters.add(_c)
+                    }
+                }
 
-                        column.value.converters.forEach { converter ->
-                            val converted = ConversionList(input, converter).convert()
-
-                            if (converted.source != converted.value) {
-                                val resultConverter = Converter(converted.value, converted.parameters)
-                                resultConverter.name = converted.name
-                                resultConverter.source = converted.source
-                                result.converters.add(resultConverter)
-
-                                input = converted.value
-                            }
-                        }
-
+                Log.fields.forEach { f ->
+                    var input = f.value
+                    f.converters.forEach { c ->
+                        val converted = ConversionList(input, c).convert()
+                        input = converted.value
+                        c.value = converted.value
                     }
                 }
 
@@ -81,7 +79,7 @@ fun main(args: Array<String>) {
             }
 
             get("/") {
-                call.respondText(renderPage(), ContentType.Text.Html)
+                call.respondText(renderPage(cols), ContentType.Text.Html)
             }
 
             get("/data") {

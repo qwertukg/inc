@@ -1,14 +1,14 @@
 package strings
 
 import base.Convertable
-import base.Log
 import strings.converters.*
 
 class ConversionList(val value: String, val converter: Convertable) {
-    private val converters = listOf<Convertable>(
+    val converters = listOf<Convertable>(
             Trim(value),
             Remove(value, converter.parameters),
             Replace(value, converter.parameters),
+            ReplaceIgnoreCase(value, converter.parameters),
             ToUpper(value)
     )
 
