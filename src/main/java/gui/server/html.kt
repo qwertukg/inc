@@ -75,7 +75,6 @@ private fun FORM.bootstrapInput(_name: String, text: Boolean = false) {
             name = _name
         }
     }
-
 }
 
 private fun DIV.bootstrapPanel(title: String, block: DIV.() -> Unit) {
