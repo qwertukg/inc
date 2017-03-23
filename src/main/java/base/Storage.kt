@@ -13,14 +13,24 @@ object Storage {
             if (f.y == 0) {
                 val row = mutableListOf(f.x.toString())
                 fields.filter { it.x == f.x }.forEach {
-                    row.add("[${it.value}]")
-                    if (!it.converters.isEmpty()) {
-                        val v = it.converters.last().value
-                        if (v != it.value) row.add("[${it.converters.last().value}]")
-                        else row.add("")
+                    var lastValue: String = it.value
+                    var source = it.value
+                    var arrow = ""
+                    var result = ""
+
+                    if (!it.converters.isEmpty()) lastValue = it.converters.last().value
+
+                    if (it.value != lastValue) {
+                        source = "<pre class='source'>" + it.value + "</pre>"
+                        arrow = "&rarr;"
+                        result = "<pre class='result'>" + it.converters.last().value + "</pre>"
                     }
-                    else row.add("")
+
+                    row.add(source)
+                    row.add(arrow)
+                    row.add(result)
                 }
+
                 data.add(f.x, row)
             }
         }

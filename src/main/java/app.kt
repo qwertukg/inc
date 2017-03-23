@@ -21,29 +21,33 @@ fun main(args: Array<String>) {
 
     var cols = 0
 
+    var csvColor: String = "#c90"
+    var jsonColor: String = "#c00"
+    var runColor: String = "#c00"
+
     val server = embeddedJettyServer(8080) {
         routing {
-            get("/result") {
-                call.respondText(Storage.toResult())
-            }
-
             post("/csv") {
                 val reader = readCsv(call.request)
                 val rows = CSVFormat.EXCEL.parse(reader)
                 val minRowSize = rows.first().size()
-                cols = rows.first().size() * 2
+                cols = rows.first().size() * 3
 
                 Storage.fields.clear()
 
                 rows.withIndex().forEach { csvRow ->
-                    if (minRowSize != csvRow.value.size()) throw IOException("Min row size [$minRowSize] != current row size [${csvRow.value.size()}]")
+                    if (minRowSize != csvRow.value.size()) throw IOException("Min row size [$minRowSize] must be equal current row size [${csvRow.value.size()}]")
 
                     csvRow.value.withIndex().forEach { csvField ->
-                        if (csvField.value.isEmpty()) throw IOException("[] Value can not be empty [${csvRow.index} : ${csvField.index}]")
+                        if (csvField.value.isEmpty()) throw IOException("Value can not be empty [${csvRow.index} : ${csvField.index}]")
 
                         Storage.fields.add(Field(csvRow.index, csvField.index, csvField.value))
                     }
                 }
+
+                csvColor = "#090"
+                jsonColor = "#c90"
+                runColor = "#c00"
 
                 reader.close()
                 rows.close()
@@ -59,12 +63,21 @@ fun main(args: Array<String>) {
                     f.converters.clear()
 
                     jsonColumn.converters.forEach { c ->
-                        val _c = Converter(f.value, c.parameters)
-                        _c.name = c.name
-                        f.converters.add(_c)
+                        val converter = Converter(f.value, c.parameters)
+                        converter.name = c.name
+                        f.converters.add(converter)
                     }
                 }
 
+                csvColor = "#090"
+                jsonColor = "#090"
+                runColor = "#c90"
+
+                reader.close()
+                call.respondRedirect("/")
+            }
+
+            post("/run") {
                 Storage.fields.forEach { f ->
                     var input = f.value
                     f.converters.forEach { c ->
@@ -74,12 +87,15 @@ fun main(args: Array<String>) {
                     }
                 }
 
-                reader.close()
+                csvColor = "#090"
+                jsonColor = "#090"
+                runColor = "#090"
+
                 call.respondRedirect("/")
             }
 
             get("/") {
-                call.respondText(renderPage(cols), ContentType.Text.Html)
+                call.respondText(renderPage(cols, csvColor, jsonColor, runColor), ContentType.Text.Html)
             }
 
             get("/data") {
@@ -91,14 +107,11 @@ fun main(args: Array<String>) {
                 call.respondText(js, ContentType.Application.Json)
             }
 
-
+            get("/result") {
+                call.respondText(Storage.toResult())
+            }
         }
     }
 
     server.start(true)
-
-    /*var result = strings.ConversionList("  Daniil  ").stringConverters.first { it.name == "trim" }.convert()
-    result = strings.ConversionList(result.value, listOf(strings.__Parameter("a", "@"))).stringConverters.first { it.name == "replace" }.convert()
-
-    val r = result*/
 }
