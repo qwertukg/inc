@@ -6,19 +6,17 @@ import com.google.gson.Gson
 import org.jetbrains.ktor.application.call
 import org.jetbrains.ktor.http.ContentType
 import org.jetbrains.ktor.jetty.embeddedJettyServer
-import org.jetbrains.ktor.request.*
 import org.jetbrains.ktor.response.*
 import org.jetbrains.ktor.routing.*
 import gui.server.*
 import strings.ConversionList
 import org.apache.commons.csv.CSVFormat
+import org.jetbrains.ktor.content.*
+import java.io.File
 import java.io.IOException
-import kotlin.reflect.full.createInstance
-import kotlin.reflect.full.primaryConstructor
+import java.nio.file.Path
 
 fun main(args: Array<String>) {
-    //val reader = FileReader("${System.getProperty("user.dir")}\\src\\main\\java\\data.base.json")
-
     var cols = 0
 
     var csvColor: String = "#c90"
@@ -103,8 +101,8 @@ fun main(args: Array<String>) {
             }
 
             get("/data-tables.js") {
-                val js = getContent("\\gui\\client\\dataTables.js")
-                call.respondText(js, ContentType.Application.Json)
+                val file = File("${System.getProperty("user.dir")}\\src\\main\\java\\gui\\client\\dataTables.js")
+                call.respond(LocalFileContent(file))
             }
 
             get("/result") {
